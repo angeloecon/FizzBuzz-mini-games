@@ -1,4 +1,3 @@
-import { auth } from "@/config/firebase";
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -9,8 +8,11 @@ import {
   ProfileHeader,
 } from "../components/dashboard";
 
+import { useAuth } from "@/context/AuthContext";
+
 const Dashboard = () => {
   const router = useRouter();
+  const { user, signOut } = useAuth();
 
   const handleDifficultySelect = (difficulty: string) => {
     console.log(`Selected Difficulty: ${difficulty}`);
@@ -20,15 +22,14 @@ const Dashboard = () => {
     });
   };
 
-  const handleSignOut = () => {
-    auth.signOut();
+  const handleSignOut = async () => {
+    await signOut();
     router.replace("/");
   };
 
   const handleGoToScoreboard = () => {
     router.push("/scoreBoard");
   };
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Header Section __________________________ */}
@@ -38,7 +39,7 @@ const Dashboard = () => {
       />
 
       {/* Profile / Welcome Section __________________________ */}
-      <ProfileHeader email={auth.currentUser?.email} />
+      <ProfileHeader email={user?.email} />
 
       {/* Difficulty Selection __________________________ */}
       <View style={styles.menuContainer}>

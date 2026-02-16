@@ -7,7 +7,7 @@ import {
   FlatList,
   StyleSheet,
   Text,
-  View
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HeaderBar, TabMenu } from "../components/scoreboard";

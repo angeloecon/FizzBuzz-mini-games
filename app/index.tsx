@@ -1,8 +1,5 @@
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -13,10 +10,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth } from "../config/firebase";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { signIn, signUp } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,7 +22,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signIn(email, password);
       router.replace("/dashboard");
     } catch (error: any) {
       Alert.alert("Login Failed", error.message);
@@ -36,7 +34,7 @@ export default function LoginScreen() {
   const handleSignUp = async () => {
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      await signUp(email, password);
       Alert.alert("Success", "Account created! Logging you in...");
       router.replace("/game");
     } catch (error: any) {

@@ -4,7 +4,9 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { auth, db } from "../config/firebase";
+import { db } from "../config/firebase";
+
+import { useAuth } from "@/context/AuthContext";
 import {
   checkFizzBuzz,
   FizzBuzzResult,
@@ -23,6 +25,8 @@ const gameDifficulties: Record<
 
 export default function GameScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+
   const difficultyKey = (useLocalSearchParams().difficulty as string) || "easy";
   // * State depends on the difficulty -==-==-==-==-
   const [currentNumber, setCurrentNumber] = useState(
@@ -87,10 +91,8 @@ export default function GameScreen() {
   const endGame = async () => {
     setGameOver(true);
 
-    try {
-      const user = auth.currentUser;
-
-      if (user) {
+    if (user) {
+      try {
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
 
@@ -106,18 +108,17 @@ export default function GameScreen() {
           }
         } else {
           await setDoc(userRef, {
-            userName: auth.currentUser?.email?.split("@")[0] || "Unknown",
+            userName: user.email?.split("@")[0] || "Unknown",
             highScore: {
               [difficultyKey]: score,
             },
             lastPlayed: new Date(),
           });
         }
+      } catch (error) {
+        console.error("Error saving score:", error);
       }
-    } catch (error) {
-      console.error("Error saving score:", error);
     }
-
     Alert.alert("Game Over!", `Final Score: ${score}`, [
       { text: "Play Again", onPress: restartGame },
       {
