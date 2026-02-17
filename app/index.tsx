@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   StyleSheet,
   Text,
   TextInput,
@@ -46,7 +47,13 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>FizzBuzz Logic</Text>
+      <View style={styles.logoContainer}>
+        <Image
+          source={require("../assets/images/android-icon-foreground.png")}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
+      </View>
 
       <TextInput
         style={styles.input}
@@ -88,12 +95,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#3d7aff",
   },
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 40,
+    marginBottom: 20,
     textAlign: "center",
     color: "#333",
   },
@@ -101,12 +108,19 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 15,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 20,
     borderWidth: 1,
     borderColor: "#ddd",
   },
+  logoContainer: {
+    alignItems: "center",
+  },
+  logoImage: {
+    width: 250,
+    height: 250,
+  },
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#1642d3",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -116,7 +130,10 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: "#007AFF",
+    borderColor: "#1642d3",
   },
-  secondaryButtonText: { color: "#007AFF", fontWeight: "bold", fontSize: 16 },
+  secondaryButtonText: { color: "#1642d3", fontWeight: "bold", fontSize: 16 },
 });
+
+// Font : Bangers, Luckiest Guy
+//

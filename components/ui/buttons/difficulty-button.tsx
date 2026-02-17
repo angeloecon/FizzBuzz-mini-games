@@ -1,6 +1,7 @@
+import difficultyBtn from "@/assets/buttons/difficultyBtn.png";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ImageBackground, Pressable, StyleSheet, Text } from "react-native";
 
 type DifficultyBtnProps = {
   title: string;
@@ -16,19 +17,29 @@ const DifficultyButtons = ({
   onPress,
 }: DifficultyBtnProps) => {
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Pressable
       onPress={onPress}
-      style={[styles.difficultyButton, { backgroundColor: color }]}
+      style={({ pressed }) => [
+        styles.imageContainer,
+        pressed && styles.pressedEffect,
+      ]}
     >
-      <Ionicons
-        name={icon}
-        size={24}
-        color="white"
-        style={{ marginRight: 10 }}
-      />
-      <Text style={styles.btnText}>{title}</Text>
-    </TouchableOpacity>
+      <ImageBackground
+        source={difficultyBtn}
+        resizeMode="stretch"
+        style={[styles.difficultyButton]}
+      >
+        <Ionicons
+          name={icon}
+          size={24}
+          style={[
+            { marginRight: 10, borderColor: "white", borderStyle: "solid" },
+            { color: color },
+          ]}
+        />
+        <Text style={styles.btnText}>{title}</Text>
+      </ImageBackground>
+    </Pressable>
   );
 };
 
@@ -46,6 +57,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 4,
+  },
+
+  imageContainer: {
+    height: 60,
+    width: "100%",
+    marginBottom: 10,
+  },
+
+  pressedEffect: {
+    transform: [{ scale: 0.96 }],
+    opacity: 0.9,
   },
   btnText: {
     color: "white",

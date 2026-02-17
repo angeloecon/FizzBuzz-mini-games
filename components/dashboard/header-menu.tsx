@@ -1,6 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
+import leaderBoard from "@/assets/buttons/leaderBoard.png";
+import logoutBtn from "@/assets/buttons/logout.png";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ImageBackground, Pressable, StyleSheet, View } from "react-native";
 
 type HeaderProps = {
   onSignOut: () => void;
@@ -10,15 +11,33 @@ type HeaderProps = {
 const HeaderMenu = ({ onSignOut, onGoToScoreboard }: HeaderProps) => {
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={onSignOut} style={styles.navButton}>
-        <Ionicons name="log-out-outline" size={24} color="#FF3B30" />
-        <Text style={styles.signOutText}>Sign Out</Text>
-      </TouchableOpacity>
+      <Pressable
+        onPress={onGoToScoreboard}
+        style={({ pressed }) => [
+          styles.imageContainer,
+          pressed && styles.pressedEffect,
+        ]}
+      >
+        <ImageBackground
+          source={leaderBoard}
+          resizeMode="stretch"
+          style={styles.image}
+        />
+      </Pressable>
 
-      <TouchableOpacity onPress={onGoToScoreboard} style={styles.navButton}>
-        <Text style={styles.scoreText}>Scoreboard</Text>
-        <Ionicons name="trophy-outline" size={24} color="#FFD700" />
-      </TouchableOpacity>
+      <Pressable
+        onPress={onSignOut}
+        style={({ pressed }) => [
+          styles.imageContainer,
+          pressed && styles.pressedEffect,
+        ]}
+      >
+        <ImageBackground
+          source={logoutBtn}
+          resizeMode="stretch"
+          style={styles.image}
+        />
+      </Pressable>
     </View>
   );
 };
@@ -38,6 +57,21 @@ const styles = StyleSheet.create({
   },
   signOutText: { color: "#FF3B30", fontWeight: "600", marginLeft: 4 },
   scoreText: { color: "#333", fontWeight: "600", marginRight: 4 },
+
+  pressedEffect: {
+    transform: [{ scale: 0.96 }],
+    opacity: 0.9,
+  },
+  imageContainer: {
+    height: 60,
+    width: 60,
+    marginBottom: 10,
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 export default HeaderMenu;

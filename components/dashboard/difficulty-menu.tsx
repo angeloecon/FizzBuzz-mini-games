@@ -17,8 +17,8 @@ type DifficultyMenuItem = {
 const DifficultyMenuList: DifficultyMenuItem[] = [
   { title: "Easy", color: "#4CD964", icon: "bicycle", key: "easy" },
   { title: "Normal", color: "#007AFF", icon: "car-sport", key: "normal" },
-  { title: "Hard", color: "#FF9500", icon: "airplane", key: "hard" },
-  { title: "Expert", color: "#FF3B30", icon: "rocket", key: "expert" },
+  { title: "Hard", color: "#ff5100", icon: "airplane", key: "hard" },
+  { title: "Expert", color: "#ff0d00", icon: "rocket", key: "expert" },
 ];
 
 const DifficultyMenu = ({ onSelect }: props) => {

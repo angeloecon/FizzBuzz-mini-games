@@ -88,6 +88,7 @@ export default function GameScreen() {
   // ------- End Game & Save to Firebase // Save High Score to Firebase -------
   // TODO: Refactor this code for faster Alert response, should separate async function
   // from the Alert
+  // should pop alert then after save the score
   const endGame = async () => {
     setGameOver(true);
 
@@ -206,8 +207,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 15,
   },
-  btnBlue: { backgroundColor: "#3498db" }, // Normal
-  btnYellow: { backgroundColor: "#f1c40f" }, // Fizz
-  btnGreen: { backgroundColor: "#2ecc71" }, // Buzz
-  btnRed: { backgroundColor: "#e74c3c" }, // FizzBuzz
+  btnBlue: { color: "#3498db" }, // Normal
+  btnYellow: { color: "#fbff09" }, // Fizz
+  btnGreen: { color: "#2ecc71" }, // Buzz
+  btnRed: { color: "#e74c3c" }, // FizzBuzz
 });
