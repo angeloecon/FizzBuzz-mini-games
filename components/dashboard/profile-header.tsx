@@ -30,7 +30,11 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  welcomeText: { fontSize: 16, color: "#888", marginTop: 10 },
+  welcomeText: {
+    fontSize: 16,
+    color: "#888",
+    marginTop: 10,
+  },
   usernameText: {
     fontSize: 28,
     fontWeight: "bold",

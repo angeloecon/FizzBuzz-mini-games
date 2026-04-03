@@ -1,67 +1,49 @@
 import AnswerButton from "@/components/ui/buttons/answer-button";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { db } from "../config/firebase";
 
+import { BASE_ANSWER_OPTIONS, GAME_DIFFICULTIES } from "@/constant/gameConfig";
 import { useAuth } from "@/context/AuthContext";
-import {
-  checkFizzBuzz,
-  FizzBuzzResult,
-  generateRandomNumber,
-} from "../utils/fizzBuzzLogic";
-
-const gameDifficulties: Record<
-  string,
-  { maxNumber: number; timePerRound: number }
-> = {
-  easy: { maxNumber: 50, timePerRound: 20 },
-  normal: { maxNumber: 100, timePerRound: 15 },
-  hard: { maxNumber: 200, timePerRound: 10 },
-  expert: { maxNumber: 500, timePerRound: 5 },
-};
+import { saveHighScore } from "@/services/scoreServices";
+import { FizzBuzzResult } from "@/types";
+import { shuffleArray } from "@/utils/shuffleArray";
+import { checkFizzBuzz, generateRandomNumber } from "../utils/fizzBuzzLogic";
 
 export default function GameScreen() {
   const router = useRouter();
   const { user } = useAuth();
 
   const difficultyKey = (useLocalSearchParams().difficulty as string) || "easy";
-  // * State depends on the difficulty -==-==-==-==-
-  const [currentNumber, setCurrentNumber] = useState(
-    generateRandomNumber(1, gameDifficulties[difficultyKey].maxNumber),
-  );
-  const [timeLeft, setTimeLeft] = useState(
-    gameDifficulties[difficultyKey].timePerRound,
-  );
+  const config = GAME_DIFFICULTIES[difficultyKey];
 
-  // * Game State -==-==-==-==-
+  // States  +======+======+======+======+======+======+======+____
+  const [answerButtons, setAnswerButtons] = useState(BASE_ANSWER_OPTIONS);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [gameOver, setGameOver] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(config.timePerRound);
+  const [isJumping, setIsJumping] = useState(false);
+  const [currentNumber, setCurrentNumber] = useState(
+    generateRandomNumber(1, config.maxNumber),
+  );
 
-  // --- Timer Logic ---
+  // Timer Logic   +======+======+======+======+======+======+======+____
   useEffect(() => {
     if (gameOver) return;
-
     if (timeLeft === 0) {
       handleWrongAnswer();
       return;
     }
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
+    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [timeLeft, gameOver]);
 
-  // ------- Handle User Answer -------
-  const handleAnswer = (choice: FizzBuzzResult) => {
-    const correctAnswer = checkFizzBuzz(currentNumber);
+  // Game Logic  +======+======+======+======+======+======+======+____
 
-    if (choice === correctAnswer) {
+  const handleAnswer = (choice: FizzBuzzResult) => {
+    if (choice === checkFizzBuzz(currentNumber)) {
       setScore(score + 1);
       resetRound();
     } else {
@@ -74,61 +56,45 @@ export default function GameScreen() {
       setLives(lives - 1);
       resetRound();
     } else {
-      endGame();
+      if (difficultyKey === "expert") {
+        triggerJump();
+      } else {
+        handleEndGame();
+      }
     }
+  };
+
+  const triggerJump = () => {
+    setGameOver(true);
+    setIsJumping(true);
+    setTimeout(() => {
+      setIsJumping(false);
+      handleEndGame();
+    }, 1500);
   };
 
   const resetRound = () => {
-    setCurrentNumber(
-      generateRandomNumber(1, gameDifficulties[difficultyKey].maxNumber),
-    );
-    setTimeLeft(gameDifficulties[difficultyKey].timePerRound);
+    setCurrentNumber(generateRandomNumber(1, config.maxNumber));
+    setTimeLeft(config.timePerRound);
+
+    if (difficultyKey === "expert") {
+      // Shuffle answer options for expert mode for more challange
+      setAnswerButtons(shuffleArray(BASE_ANSWER_OPTIONS));
+    } else {
+      setAnswerButtons(BASE_ANSWER_OPTIONS);
+    }
   };
 
-  // ------- End Game & Save to Firebase // Save High Score to Firebase -------
-  // TODO: Refactor this code for faster Alert response, should separate async function
-  // from the Alert
-  // should pop alert then after save the score
-  const endGame = async () => {
+  const handleEndGame = () => {
     setGameOver(true);
 
-    if (user) {
-      try {
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-          const userData = userSnap.data();
-          const currentHighScore = userData.highScore?.[difficultyKey] || 0;
-
-          if (score > currentHighScore) {
-            await updateDoc(userRef, {
-              [`highScore.${difficultyKey}`]: score,
-              lastPlayed: new Date(),
-            });
-          }
-        } else {
-          await setDoc(userRef, {
-            userName: user.email?.split("@")[0] || "Unknown",
-            highScore: {
-              [difficultyKey]: score,
-            },
-            lastPlayed: new Date(),
-          });
-        }
-      } catch (error) {
-        console.error("Error saving score:", error);
-      }
-    }
     Alert.alert("Game Over!", `Final Score: ${score}`, [
       { text: "Play Again", onPress: restartGame },
-      {
-        text: "Home",
-        onPress: () => {
-          router.replace("/dashboard");
-        },
-      },
+      { text: "Home", onPress: () => router.replace("/dashboard") },
     ]);
+
+    // Save to firebase
+    saveHighScore(user, difficultyKey, score);
   };
 
   const restartGame = () => {
@@ -140,7 +106,7 @@ export default function GameScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header Info __________________________ */}
+      {/* Header Info  +======+======+======+======+======+======+======+____*/}
       <View style={styles.header}>
         <Text style={styles.statText}>❤️ {lives}</Text>
         <Text style={styles.statText}>🏆 {score}</Text>
@@ -151,64 +117,87 @@ export default function GameScreen() {
         </Text>
       </View>
 
-      {/* The Big Number __________________________ */}
+      {/* Number Display  +======+======+======+======+======+======+======+____*/}
       <View style={styles.questionContainer}>
         <Text style={styles.label}>Number:</Text>
         <Text style={styles.number}>{currentNumber}</Text>
       </View>
 
-      {/* Answer Buttons __________________________ */}
+      {/* DRY Answer Buttons  +======+======+======+======+======+======+======+____*/}
       <View style={styles.buttonGrid}>
-        <AnswerButton
-          onPress={() => handleAnswer("Number")}
-          text="Normal"
-          style={styles.btnBlue}
-        />
-
-        <AnswerButton
-          onPress={() => handleAnswer("Fizz")}
-          text="Fizz"
-          style={styles.btnYellow}
-        />
-
-        <AnswerButton
-          onPress={() => handleAnswer("Buzz")}
-          text="Buzz"
-          style={styles.btnGreen}
-        />
-
-        <AnswerButton
-          onPress={() => handleAnswer("FizzBuzz")}
-          text="FizzBuzz"
-          style={styles.btnRed}
-        />
+        {answerButtons.map((option) => (
+          <AnswerButton
+            key={option.text}
+            onPress={() => handleAnswer(option.value)}
+            text={option.text}
+            style={option.styles}
+          />
+        ))}
       </View>
+
+      {isJumping && (
+        <View style={styles.jumpscareContainer}>
+          <Image
+            source={require("../assets/images/images.jpg")}
+            style={styles.jumpscareImage}
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 50,
     marginTop: 20,
   },
-  statText: { fontSize: 24, fontWeight: "bold" },
-  //
-  questionContainer: { alignItems: "center", marginBottom: 60 },
-  label: { fontSize: 20, color: "#666" },
-  number: { fontSize: 80, fontWeight: "bold", color: "#333" },
-  //
+  statText: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  questionContainer: {
+    alignItems: "center",
+    marginBottom: 60,
+  },
+  label: {
+    fontSize: 20,
+    color: "#666",
+  },
+  number: {
+    fontSize: 80,
+    fontWeight: "bold",
+    color: "#333",
+  },
   buttonGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
     gap: 15,
   },
-  btnBlue: { color: "#3498db" }, // Normal
-  btnYellow: { color: "#fbff09" }, // Fizz
-  btnGreen: { color: "#2ecc71" }, // Buzz
-  btnRed: { color: "#e74c3c" }, // FizzBuzz
+  //
+  jumpscareContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "black",
+    zIndex: 9999,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 99,
+  },
+  jumpscareImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
 });

@@ -32,16 +32,16 @@ const Dashboard = () => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header Section __________________________ */}
+      {/* Header Section  +======+======+======+======+======+======+======+ */}
       <HeaderMenu
         onSignOut={handleSignOut}
         onGoToScoreboard={handleGoToScoreboard}
       />
 
-      {/* Profile / Welcome Section __________________________ */}
+      {/* Profile / Welcome Section  +======+======+======+======+======+======+======+ */}
       <ProfileHeader email={user?.email} />
 
-      {/* Difficulty Selection __________________________ */}
+      {/* Difficulty Selection  +======+======+======+======+======+======+======+__ */}
       <View style={styles.menuContainer}>
         <Text style={styles.sectionTitle}>Select Difficulty</Text>
         <DifficultyMenu onSelect={handleDifficultySelect} />
