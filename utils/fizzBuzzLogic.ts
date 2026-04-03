@@ -1,4 +1,4 @@
-export type FizzBuzzResult = "Fizz" | "Buzz" | "FizzBuzz" | "Number";
+import { FizzBuzzResult } from "@/types";
 
 export const checkFizzBuzz = (num: number): FizzBuzzResult => {
   if (num % 15 === 0) return "FizzBuzz";

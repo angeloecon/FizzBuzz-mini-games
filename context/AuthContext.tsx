@@ -1,4 +1,4 @@
-import { auth } from "@/config/firebase";
+import { auth } from "@/firebase/firebaseConfig";
 import {
   createUserWithEmailAndPassword,
   signOut as logOut,
@@ -41,8 +41,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      setLoading(false);
     } catch (error) {
-      console.error("Error signing out: ", error);
       throw error;
     }
   };
@@ -59,7 +59,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      console.error("Error registering: ", error);
       throw error;
     }
   };
