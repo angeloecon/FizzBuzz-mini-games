@@ -1,9 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
+
 type ProfileHeaderProps = {
   email?: string | null;
 };
+
 
 const ProfileHeader = ({ email }: ProfileHeaderProps) => {
   const username = email ? email.split("@")[0] : "Guest Player";
@@ -17,6 +19,7 @@ const ProfileHeader = ({ email }: ProfileHeaderProps) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   profileSection: {
@@ -42,5 +45,6 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
   },
 });
+
 
 export default ProfileHeader;

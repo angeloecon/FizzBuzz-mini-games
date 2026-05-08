@@ -3,9 +3,11 @@ import { DifficultyMenuList } from "@/constant/gameConfig";
 import React from "react";
 import { View } from "react-native";
 
+
 type props = {
   onSelect: (difficulty: string) => void;
 };
+
 
 const DifficultyMenu = ({ onSelect }: props) => {
   return (
@@ -23,4 +25,7 @@ const DifficultyMenu = ({ onSelect }: props) => {
   );
 };
 
+
 export default DifficultyMenu;
+
+
