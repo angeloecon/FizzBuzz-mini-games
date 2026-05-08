@@ -1,14 +1,40 @@
+import menuBtn from "@/assets/buttons/hamburger_menu.png";
 import leaderBoard from "@/assets/buttons/leaderBoard.png";
-import logoutBtn from "@/assets/buttons/logout.png";
+import volumeOn from "@/assets/buttons/volume.png";
+import volumeOff from "@/assets/buttons/volumeOff.png";
 import React from "react";
-import { ImageBackground, Pressable, StyleSheet, View } from "react-native";
+import { Alert, ImageBackground, Pressable, StyleSheet, View } from "react-native";
+import { useMusic } from "../../app/_layout";
 
 type HeaderProps = {
   onSignOut: () => void;
+  onDeleteAccount: () => void;
   onGoToScoreboard: () => void;
 };
 
-const HeaderMenu = ({ onSignOut, onGoToScoreboard }: HeaderProps) => {
+const HeaderMenu = ({ onSignOut, onDeleteAccount, onGoToScoreboard }: HeaderProps) => {
+  
+  const { isMuted, toggleMute } = useMusic();
+
+  const handlePressMenu = () => {
+    Alert.alert("Menu", "What do you want to do?", [
+      { text: "Logout", onPress: onSignOut },
+      { text: "Delete Account", style: "destructive", onPress: confirmDelete },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  };
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Are you sure?",
+      "All your data will be permanently deleted. This action cannot be undone.",
+      [
+        { text: "No", style: "cancel" },
+        { text: "Yes", style: "destructive", onPress: onDeleteAccount },
+      ]
+    );
+  };
+
   return (
     <View style={styles.headerContainer}>
       <Pressable
@@ -25,15 +51,30 @@ const HeaderMenu = ({ onSignOut, onGoToScoreboard }: HeaderProps) => {
         />
       </Pressable>
 
+      {/* Volume Toggle Button +======+======+======+======+ */}
       <Pressable
-        onPress={onSignOut}
+  onPress={() => {
+    console.log("Volume Button Pressed!");
+    toggleMute();
+  }}
+  style={({ pressed }) => [pressed && styles.pressedEffect]}
+>
+  <ImageBackground
+  source={isMuted ? volumeOff : volumeOn} 
+  resizeMode="stretch"
+  style={styles.volumeImage}
+/>
+</Pressable>
+
+      <Pressable
+        onPress={handlePressMenu}
         style={({ pressed }) => [
           styles.imageContainer,
           pressed && styles.pressedEffect,
         ]}
       >
         <ImageBackground
-          source={logoutBtn}
+          source={menuBtn}
           resizeMode="stretch"
           style={styles.image}
         />
@@ -49,28 +90,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     marginBottom: 20,
+    position: "relative", 
   },
-  navButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 8,
-  },
-  signOutText: { color: "#FF3B30", fontWeight: "600", marginLeft: 4 },
-  scoreText: { color: "#333", fontWeight: "600", marginRight: 4 },
-
-  pressedEffect: {
-    transform: [{ scale: 0.96 }],
-    opacity: 0.9,
-  },
-  imageContainer: {
-    height: 60,
-    width: 60,
-    marginBottom: 10,
-  },
-  image: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  pressedEffect: { transform: [{ scale: 0.96 }], opacity: 0.9 },
+  imageContainer: { height: 60, width: 60, marginBottom: 10 },
+  image: { flex: 1, justifyContent: "center", alignItems: "center" },
+  
+  volumeImage: {
+    height: 50,
+    width: 50,
   },
 });
 

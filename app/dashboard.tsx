@@ -1,12 +1,16 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   DifficultyMenu,
   HeaderMenu,
   ProfileHeader,
 } from "../components/dashboard";
+
+import { auth } from "@/firebase/firebaseConfig";
+import { deleteUser } from "firebase/auth";
+import { deleteUserFirestoreData } from "../services/scoreServices";
 
 import { useAuth } from "@/context/AuthContext";
 
@@ -15,7 +19,6 @@ const Dashboard = () => {
   const { user, signOut } = useAuth();
 
   const handleDifficultySelect = (difficulty: string) => {
-    console.log(`Selected Difficulty: ${difficulty}`);
     router.replace({
       pathname: "/game",
       params: { difficulty: difficulty },
@@ -23,25 +26,53 @@ const Dashboard = () => {
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    router.replace("/");
+    try {
+      await signOut();
+      router.replace("/");
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
   };
 
   const handleGoToScoreboard = () => {
     router.push("/scoreBoard");
   };
+
+  const handleDeleteAccount = async () => {
+    const currentUser = auth.currentUser;
+
+    if (currentUser) {
+      const uid = currentUser.uid;
+      try {
+        // delete firestore first
+        await deleteUserFirestoreData(uid);
+        
+        // delete the Auth Account
+        await deleteUser(currentUser);
+
+        Alert.alert("Success", "Account and records deleted.");
+        router.replace("/");
+      } catch (error: any) {
+        if (error.code === "auth/requires-recent-login") {
+          Alert.alert("Security Check", "Please logout and login again before deleting.");
+        } else {
+          console.error("Delete error:", error);
+          Alert.alert("Error", "Failed to delete account.");
+        }
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header Section  +======+======+======+======+======+======+======+ */}
       <HeaderMenu
         onSignOut={handleSignOut}
         onGoToScoreboard={handleGoToScoreboard}
+        onDeleteAccount={handleDeleteAccount}
       />
 
-      {/* Profile / Welcome Section  +======+======+======+======+======+======+======+ */}
       <ProfileHeader email={user?.email} />
 
-      {/* Difficulty Selection  +======+======+======+======+======+======+======+__ */}
       <View style={styles.menuContainer}>
         <Text style={styles.sectionTitle}>Select Difficulty</Text>
         <DifficultyMenu onSelect={handleDifficultySelect} />
@@ -56,8 +87,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F2F7",
     paddingHorizontal: 20,
   },
-  // Profile --------------------------
-
   menuContainer: {
     flex: 1,
   },
@@ -70,4 +99,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Dashboard;
+export default Dashboard; 

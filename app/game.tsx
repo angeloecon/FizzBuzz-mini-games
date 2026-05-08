@@ -11,14 +11,19 @@ import { FizzBuzzResult } from "@/types";
 import { shuffleArray } from "@/utils/shuffleArray";
 import { checkFizzBuzz, generateRandomNumber } from "../utils/fizzBuzzLogic";
 
+import { Audio } from "expo-av";
+import { useMusic } from "./_layout";
+
 export default function GameScreen() {
   const router = useRouter();
   const { user } = useAuth();
 
+  const { stopMusic, startMusic } = useMusic();
+
   const difficultyKey = (useLocalSearchParams().difficulty as string) || "easy";
   const config = GAME_DIFFICULTIES[difficultyKey];
 
-  // States  +======+======+======+======+======+======+======+____
+  // States
   const [answerButtons, setAnswerButtons] = useState(BASE_ANSWER_OPTIONS);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -26,10 +31,10 @@ export default function GameScreen() {
   const [timeLeft, setTimeLeft] = useState(config.timePerRound);
   const [isJumping, setIsJumping] = useState(false);
   const [currentNumber, setCurrentNumber] = useState(
-    generateRandomNumber(1, config.maxNumber),
+    generateRandomNumber(1, config.maxNumber)
   );
 
-  // Timer Logic   +======+======+======+======+======+======+======+____
+  // Timer Logic
   useEffect(() => {
     if (gameOver) return;
     if (timeLeft === 0) {
@@ -40,8 +45,7 @@ export default function GameScreen() {
     return () => clearInterval(timer);
   }, [timeLeft, gameOver]);
 
-  // Game Logic  +======+======+======+======+======+======+======+____
-
+  // Game Logic
   const handleAnswer = (choice: FizzBuzzResult) => {
     if (choice === checkFizzBuzz(currentNumber)) {
       setScore(score + 1);
@@ -49,6 +53,39 @@ export default function GameScreen() {
     } else {
       handleWrongAnswer();
     }
+  };
+
+  const triggerJump = async () => {
+    setGameOver(true);
+    setIsJumping(true);
+
+    // Stop continuous music for jumpscare
+    try {
+      await stopMusic();
+    } catch (e) {
+      console.log("Error stopping layout music:", e);
+    }
+
+    // Play jumpscare sound
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/audio/jumpscare_sound.mp3")
+      );
+      await sound.playAsync();
+
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (error) {
+      console.log("Error playing jumpscare sound:", error);
+    }
+
+    setTimeout(() => {
+      setIsJumping(false);
+      handleEndGame();
+    }, 2000);
   };
 
   const handleWrongAnswer = () => {
@@ -64,21 +101,11 @@ export default function GameScreen() {
     }
   };
 
-  const triggerJump = () => {
-    setGameOver(true);
-    setIsJumping(true);
-    setTimeout(() => {
-      setIsJumping(false);
-      handleEndGame();
-    }, 1500);
-  };
-
   const resetRound = () => {
     setCurrentNumber(generateRandomNumber(1, config.maxNumber));
     setTimeLeft(config.timePerRound);
 
     if (difficultyKey === "expert") {
-      // Shuffle answer options for expert mode for more challange
       setAnswerButtons(shuffleArray(BASE_ANSWER_OPTIONS));
     } else {
       setAnswerButtons(BASE_ANSWER_OPTIONS);
@@ -89,8 +116,20 @@ export default function GameScreen() {
     setGameOver(true);
 
     Alert.alert("Game Over!", `Final Score: ${score}`, [
-      { text: "Play Again", onPress: restartGame },
-      { text: "Home", onPress: () => router.replace("/dashboard") },
+      {
+        text: "Play Again",
+        onPress: () => {
+          startMusic(); // restart ang bgm
+          restartGame();
+        },
+      },
+      {
+        text: "Home",
+        onPress: () => {
+          startMusic(); 
+          router.replace("/dashboard");
+        },
+      },
     ]);
 
     // Save to firebase
@@ -106,7 +145,7 @@ export default function GameScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header Info  +======+======+======+======+======+======+======+____*/}
+      {/* Header Info */}
       <View style={styles.header}>
         <Text style={styles.statText}>❤️ {lives}</Text>
         <Text style={styles.statText}>🏆 {score}</Text>
@@ -117,13 +156,13 @@ export default function GameScreen() {
         </Text>
       </View>
 
-      {/* Number Display  +======+======+======+======+======+======+======+____*/}
+      {/* Number Display */}
       <View style={styles.questionContainer}>
         <Text style={styles.label}>Number:</Text>
         <Text style={styles.number}>{currentNumber}</Text>
       </View>
 
-      {/* DRY Answer Buttons  +======+======+======+======+======+======+======+____*/}
+      {/* Answer Buttons */}
       <View style={styles.buttonGrid}>
         {answerButtons.map((option) => (
           <AnswerButton
@@ -135,10 +174,11 @@ export default function GameScreen() {
         ))}
       </View>
 
+      {/* Jumpscare Image */}
       {isJumping && (
         <View style={styles.jumpscareContainer}>
           <Image
-            source={require("../assets/images/images.jpg")}
+            source={require("../assets/images/jumpscare.jpg")}
             style={styles.jumpscareImage}
           />
         </View>
@@ -182,7 +222,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 15,
   },
-  //
   jumpscareContainer: {
     position: "absolute",
     top: 0,
