@@ -1,6 +1,7 @@
 import { db } from "@/firebase/firebaseConfig";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -69,6 +70,19 @@ export const fetchHighScoreList = async (selectedDifficulty: string) => {
     return highScoreList.filter((player) => player.score > 0);
   } catch (error) {
     console.error("Error fetching high score list:", error);
+    throw error;
+  }
+};
+
+// Function to delete user data from Firestore when account is deleted +======+======+======+======+======+======+======+
+export const deleteUserFirestoreData = async (uid: string) => {
+  if (!uid) return;
+  try {
+    const userRef = doc(db, "users", uid);
+    await deleteDoc(userRef);
+    console.log("Firestore record deleted successfully");
+  } catch (error) {
+    console.error("Error deleting Firestore data:", error);
     throw error;
   }
 };

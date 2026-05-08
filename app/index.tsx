@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   switchText: {
-    color: "#0898f8",
+    color: "#a4dcff",
   },
 
   //Error Styles
