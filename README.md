@@ -1,50 +1,78 @@
-# Welcome to your Expo app 👋
+# FizzBuzz Mini Game
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Welcome to the **FizzBuzz Mini Game**, a fun and interactive mobile application built with [React Native](https://reactnative.dev/) and [Expo](https://expo.dev/).
 
-## Get started
+## 🎮 About the Game
 
-1. Install dependencies
+This is a modern twist on the classic FizzBuzz game. Test your quick thinking and reflexes by correctly identifying whether a given number is:
+- **Fizz** (Divisible by 3)
+- **Buzz** (Divisible by 5)
+- **FizzBuzz** (Divisible by both 3 and 5)
+- **Number** (None of the above)
 
-   ```bash
-   npm install
-   ```
+With varying difficulty levels, time limits, and a life system, how high can you score before the time runs out?  
 
-2. Start the app
+## 🚀 Features
 
-   ```bash
-   npx expo start
-   ```
+- **Multiple Difficulties:** Play on different difficulty settings (e.g., Easy, Normal, Expert) with varying time constraints and mechanics.
+- **Lives & Timer System:** Make quick decisions! You have limited time per round and a limited number of lives.
+- **Firebase Integration:** 
+  - User Authentication (Login/Register).
+  - Global Scoreboard to track and save high scores using Firestore.
+- **Immersive Audio:** Background music and sound effects  powered by `expo-av`.
+- **Modern Navigation:** File-based routing powered by Expo Router.
 
-In the output, you'll find options to open the app in a
+## 🛠️ Tech Stack
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **Framework:** React Native, Expo
+- **Language:** TypeScript
+- **Routing:** Expo Router
+- **Backend/Database:** Firebase (Auth & Firestore)
+- **Audio:** `expo-av`
+- **Animations:** `react-native-reanimated`
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🏃‍♂️ Getting Started
 
-## Get a fresh project
-
-When you're ready, run:
+### 1. Install dependencies
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Environment Variables
 
-## Learn more
+Create a `.env` file in the root directory and add your Firebase configuration:
 
-To learn more about developing your project with Expo, look at the following resources:
+```env
+EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 3. Start the app
 
-## Join the community
+```bash
+npx expo start
+```
 
-Join our community of developers creating universal apps.
+In the output, you'll find options to open the app in a:
+- [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 📁 Project Structure
+
+- `app/` - Expo Router screens  
+- `components/` - Reusable UI components.
+- `context/` - React Context providers  
+- `firebase/` - Firebase configuration and setup.
+- `services/` - External services  
+- `utils/` - Helper functions and game logic  
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
