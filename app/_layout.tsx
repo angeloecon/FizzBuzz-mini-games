@@ -29,7 +29,7 @@ export default function RootLayout() {
       require("../assets/audio/bg_music_game.mp3"),
       { 
         isLooping: true, 
-        volume: 0.2, 
+        volume: 0.4, 
         shouldPlay: true,
         isMuted: isMuted 
       }

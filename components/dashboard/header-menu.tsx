@@ -6,15 +6,18 @@ import React from "react";
 import { Alert, ImageBackground, Pressable, StyleSheet, View } from "react-native";
 import { useMusic } from "../../app/_layout";
 
+
 type HeaderProps = {
   onSignOut: () => void;
   onDeleteAccount: () => void;
   onGoToScoreboard: () => void;
 };
 
+
 const HeaderMenu = ({ onSignOut, onDeleteAccount, onGoToScoreboard }: HeaderProps) => {
-  
+ 
   const { isMuted, toggleMute } = useMusic();
+
 
   const handlePressMenu = () => {
     Alert.alert("Menu", "What do you want to do?", [
@@ -23,6 +26,7 @@ const HeaderMenu = ({ onSignOut, onDeleteAccount, onGoToScoreboard }: HeaderProp
       { text: "Cancel", style: "cancel" },
     ]);
   };
+
 
   const confirmDelete = () => {
     Alert.alert(
@@ -34,6 +38,7 @@ const HeaderMenu = ({ onSignOut, onDeleteAccount, onGoToScoreboard }: HeaderProp
       ]
     );
   };
+
 
   return (
     <View style={styles.headerContainer}>
@@ -51,6 +56,7 @@ const HeaderMenu = ({ onSignOut, onDeleteAccount, onGoToScoreboard }: HeaderProp
         />
       </Pressable>
 
+
       {/* Volume Toggle Button +======+======+======+======+ */}
       <Pressable
   onPress={() => {
@@ -60,11 +66,12 @@ const HeaderMenu = ({ onSignOut, onDeleteAccount, onGoToScoreboard }: HeaderProp
   style={({ pressed }) => [pressed && styles.pressedEffect]}
 >
   <ImageBackground
-  source={isMuted ? volumeOff : volumeOn} 
+  source={isMuted ? volumeOff : volumeOn}
   resizeMode="stretch"
   style={styles.volumeImage}
 />
 </Pressable>
+
 
       <Pressable
         onPress={handlePressMenu}
@@ -83,6 +90,7 @@ const HeaderMenu = ({ onSignOut, onDeleteAccount, onGoToScoreboard }: HeaderProp
   );
 };
 
+
 const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
@@ -90,16 +98,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     marginBottom: 20,
-    position: "relative", 
+    position: "relative",
   },
   pressedEffect: { transform: [{ scale: 0.96 }], opacity: 0.9 },
   imageContainer: { height: 60, width: 60, marginBottom: 10 },
   image: { flex: 1, justifyContent: "center", alignItems: "center" },
-  
+ 
   volumeImage: {
     height: 50,
     width: 50,
   },
 });
+
 
 export default HeaderMenu;
