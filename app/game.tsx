@@ -58,7 +58,7 @@ export default function GameScreen() {
   const triggerJump = async () => {
     setGameOver(true);
     setIsJumping(true);
-
+    
     // Stop continuous music for jumpscare
     try {
       await stopMusic();
@@ -69,7 +69,7 @@ export default function GameScreen() {
     // Play jumpscare sound
     try {
       const { sound } = await Audio.Sound.createAsync(
-        require("../assets/audio/jumpscare_sound.mp3")
+        require("../assets/audio/whotf.mp3")
       );
       await sound.playAsync();
 
@@ -85,7 +85,7 @@ export default function GameScreen() {
     setTimeout(() => {
       setIsJumping(false);
       handleEndGame();
-    }, 2000);
+    }, 5000);
   };
 
   const handleWrongAnswer = () => {
@@ -178,7 +178,7 @@ export default function GameScreen() {
       {isJumping && (
         <View style={styles.jumpscareContainer}>
           <Image
-            source={require("../assets/images/jumpscare.jpg")}
+            source={require("../assets/images/bgk.png")}
             style={styles.jumpscareImage}
           />
         </View>
